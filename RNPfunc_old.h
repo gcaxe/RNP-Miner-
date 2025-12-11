@@ -11,12 +11,12 @@
 using namespace std;
 
 /*
-typedef char Tsymbol; //ÏîµÄÀàĞÍÊÇ·ûºÅ
-typedef vector<Tsymbol> Titemset; //Ïî¼¯
-typedef vector<vector<Tsymbol>> Tpattern;//patternÄ£Ê½
-typedef vector<vector<vector<Tsymbol>>> Tdatabase; //Êı¾İ¿â
-typedef map<Tsymbol,vector<vector<int>>> Tpos_dict; //Î»ÖÃ×Öµä
-typedef vector<vector<int>> Tpo;//po³öÏÖÎ»ÖÃ
+typedef char Tsymbol; //é¡¹çš„ç±»å‹æ˜¯ç¬¦å·
+typedef vector<Tsymbol> Titemset; //é¡¹é›†
+typedef vector<vector<Tsymbol>> Tpattern;//patternæ¨¡å¼
+typedef vector<vector<vector<Tsymbol>>> Tdatabase; //æ•°æ®åº“
+typedef map<Tsymbol,vector<vector<int>>> Tpos_dict; //ä½ç½®å­—å…¸
+typedef vector<vector<int>> Tpo;//poå‡ºç°ä½ç½®
 */
 
 void getDataPro(const Tdatabase& D, Tpos_dict& S);
@@ -43,19 +43,19 @@ void showallfp(vector<Tpattern> allfp);
 void showpattern(Tpattern p);
 
 
-//»ñÈ¡Î»ÖÃ×Öµä
+//è·å–ä½ç½®å­—å…¸
 void getDataPro(const Tdatabase& D, Tpos_dict& S) {
     //Tpos_dict S;
     int i = 0;
     set<Tsymbol> allitem;
-    for (vector<vector<Tsymbol>> sc : D) { //cppÄÜ±£Ö¤Ë³Ğò·ÃÎÊ
+    for (vector<vector<Tsymbol>> sc : D) { //cppèƒ½ä¿è¯é¡ºåºè®¿é—®
         
         int j = 0;
         for (vector<Tsymbol> sj : sc) {
             j++;
             for (Tsymbol item : sj) {
-                while (S[item].size() <= i) { //³õÊ¼»¯, 
-                    S[item].push_back({});//²¹ÉÏÇ°±ßµÄ¿ÕÒ»Î¬Êı×é
+                while (S[item].size() <= i) { //åˆå§‹åŒ–, 
+                    S[item].push_back({});//è¡¥ä¸Šå‰è¾¹çš„ç©ºä¸€ç»´æ•°ç»„
                 }
                 S[item][i].push_back(j);
 
@@ -64,8 +64,8 @@ void getDataPro(const Tdatabase& D, Tpos_dict& S) {
         }
         i++;
     }
-    for (Tsymbol item : allitem) { //²¹ÉÏºó±ßµÄ¿ÕÒ»Î¬Êı×é
-        //while ( int( S[item].size() ) <= i - 1) {//±ØĞëÊÇintÖ®¼ä±È½Ï£¬Èç¹ûÊÇuint¿ÉÄÜ0-1=´óÕıÊı
+    for (Tsymbol item : allitem) { //è¡¥ä¸Šåè¾¹çš„ç©ºä¸€ç»´æ•°ç»„
+        //while ( int( S[item].size() ) <= i - 1) {//å¿…é¡»æ˜¯intä¹‹é—´æ¯”è¾ƒï¼Œå¦‚æœæ˜¯uintå¯èƒ½0-1=å¤§æ­£æ•°
         while (S[item].size() < i ) {
             S[item].push_back({});
         }
@@ -74,11 +74,11 @@ void getDataPro(const Tdatabase& D, Tpos_dict& S) {
 }
 
 
-//Ïî¼¯Ä£Ê½Á´½ÓItemsetPatternJoin
+//é¡¹é›†æ¨¡å¼é“¾æ¥ItemsetPatternJoin
 void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
-    //Íâ²¿À´±£Ö¤FP·Ç¿Õ
+    //å¤–éƒ¨æ¥ä¿è¯FPéç©º
 
-    //´¦Àísize=1µÄÇé¿ö£¬¼´´¦ÀíÇ°×ºorºó×ºÎª¿ÕµÄÇé¿ö
+    //å¤„ç†size=1çš„æƒ…å†µï¼Œå³å¤„ç†å‰ç¼€oråç¼€ä¸ºç©ºçš„æƒ…å†µ
     //
     if (FP[0].size() == 1) {
         for (int i = 0; i < FP.size(); i++) {
@@ -92,17 +92,17 @@ void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
         return;
     }
 
-    //´¦Àísize>=2µÄÇé¿ö
-    //vector<Tpattern> C; // ºòÑ¡Ä£Ê½¼¯ºÏ
+    //å¤„ç†size>=2çš„æƒ…å†µ
+    //vector<Tpattern> C; // å€™é€‰æ¨¡å¼é›†åˆ
     for (const auto& p : FP) {
-        // »ñÈ¡Ä£Ê½pµÄºó×º£¨È¥µôµÚÒ»¸öÏî¼¯£©
+        // è·å–æ¨¡å¼pçš„åç¼€ï¼ˆå»æ‰ç¬¬ä¸€ä¸ªé¡¹é›†ï¼‰
         Tpattern psuffix;
-        if (!p.empty()) {  // ¼ì²éÄ£Ê½p²»Îª¿Õ
-            // Ê¹ÓÃinsertºÍµü´úÆ÷·¶Î§¸´ÖÆ´ÓµÚ¶ş¸öÏî¼¯¿ªÊ¼µÄËùÓĞÏî¼¯
+        if (!p.empty()) {  // æ£€æŸ¥æ¨¡å¼pä¸ä¸ºç©º
+            // ä½¿ç”¨insertå’Œè¿­ä»£å™¨èŒƒå›´å¤åˆ¶ä»ç¬¬äºŒä¸ªé¡¹é›†å¼€å§‹çš„æ‰€æœ‰é¡¹é›†
             psuffix.insert(psuffix.end(), p.begin() + 1, p.end());
         }
 
-        // Ê¹ÓÃ¶ş·Ö²éÕÒÕÒµ½µÚÒ»¸öÇ°×ºµÈÓÚpsuffixµÄÄ£Ê½
+        // ä½¿ç”¨äºŒåˆ†æŸ¥æ‰¾æ‰¾åˆ°ç¬¬ä¸€ä¸ªå‰ç¼€ç­‰äºpsuffixçš„æ¨¡å¼
         int low = 0;
         int high = FP.size() - 1;
         int mid = (low + high) / 2;
@@ -110,14 +110,14 @@ void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
 
         while (low <= high) {
             const auto& current = FP[mid];
-            // »ñÈ¡µ±Ç°Ä£Ê½µÄÇ°×º£¨È¥µô×îºóÒ»¸öÏî£©
+            // è·å–å½“å‰æ¨¡å¼çš„å‰ç¼€ï¼ˆå»æ‰æœ€åä¸€ä¸ªé¡¹ï¼‰
             Tpattern current_prefix;
             if (!current.empty()) {
                 current_prefix.insert(current_prefix.end(), current.begin(), current.end() - 1);
             }
 
             if (current_prefix == psuffix) {
-                // ÕÒµ½Æ¥Åä£¬µ«ĞèÒªÕÒµ½µÚÒ»¸ö³öÏÖµÄÎ»ÖÃ
+                // æ‰¾åˆ°åŒ¹é…ï¼Œä½†éœ€è¦æ‰¾åˆ°ç¬¬ä¸€ä¸ªå‡ºç°çš„ä½ç½®
                 while (mid > 0) {
                     const auto& prev = FP[mid - 1];
                     Tpattern prev_prefix;
@@ -141,10 +141,10 @@ void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
 
         if (!found) continue;
 
-        // Á¬½ÓËùÓĞ¾ßÓĞÏàÍ¬Ç°×ºµÄÄ£Ê½
+        // è¿æ¥æ‰€æœ‰å…·æœ‰ç›¸åŒå‰ç¼€çš„æ¨¡å¼
         while (mid < FP.size()) {
             const auto& q = FP[mid];
-            // ¼ì²éqµÄÇ°×ºÊÇ·ñµÈÓÚpsuffix
+            // æ£€æŸ¥qçš„å‰ç¼€æ˜¯å¦ç­‰äºpsuffix
             Tpattern q_prefix;
             if (!q.empty()) {
                 q_prefix.insert(q_prefix.end(), q.begin(), q.end() - 1);
@@ -152,10 +152,10 @@ void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
 
             if (q_prefix != psuffix) break;
 
-            // Ö´ĞĞÁ¬½Ó²Ù×÷£ºp ¨’ q
+            // æ‰§è¡Œè¿æ¥æ“ä½œï¼šp âŠ• q
             Tpattern t = p;
             if (!q.empty() && !q.back().empty()) {
-                // Ìí¼ÓqµÄ×îºóÒ»¸öÏî
+                // æ·»åŠ qçš„æœ€åä¸€ä¸ªé¡¹
                 if (t.empty()) {
                     t.push_back({});
                 }
@@ -171,20 +171,20 @@ void IPJ(const vector<Tpattern>& FP, vector<Tpattern>& C) {
 
 
 
-//RNP£¬¿ÉÄÜ·µ»ØÔª×é
+//RNPï¼Œå¯èƒ½è¿”å›å…ƒç»„
 void RNP(const Tdatabase& D, const int minsup, const vector<Tsymbol>& allsymbol, vector<Tpattern>& allFP) {
-    //vector<Tpattern> allFP;//È«²¿Æµ·±Ä£Ê½
-    vector<int> allsupport;//È«²¿Ö§³Ö¶È 
-    map<Tpattern, Tpo> allmappo;//×î¿ì£¬¿Õ¼ä»»Ê±¼ä
+    //vector<Tpattern> allFP;//å…¨éƒ¨é¢‘ç¹æ¨¡å¼
+    vector<int> allsupport;//å…¨éƒ¨æ”¯æŒåº¦ 
+    map<Tpattern, Tpo> allmappo;//æœ€å¿«ï¼Œç©ºé—´æ¢æ—¶é—´
 
-    Tpos_dict S;//Î»ÖÃ×Öµä
+    Tpos_dict S;//ä½ç½®å­—å…¸
     getDataPro(D, S);
 
-    vector<Tpattern> nextFP;//Ñ­»·ÄÚ?
+    vector<Tpattern> nextFP;//å¾ªç¯å†…?
     vector<Tpattern> curFP;
     vector<Tpattern> C;
 
-    size1_miner(S, minsup, allsymbol, allFP, allsupport, allmappo, nextFP);//¶ÔµÄ
+    size1_miner(S, minsup, allsymbol, allFP, allsupport, allmappo, nextFP);//å¯¹çš„
 
     while (nextFP.size() != 0) {
         curFP = nextFP;
@@ -208,7 +208,7 @@ void RNP(const Tdatabase& D, const int minsup, const vector<Tsymbol>& allsymbol,
     return;
 }
 
-//ÍÚ¾òsizeÎª1µÄÄ£Ê½
+//æŒ–æ˜sizeä¸º1çš„æ¨¡å¼
 void size1_miner(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbol,
     vector<Tpattern>& allFP, vector<int>& allsupport, map<Tpattern, Tpo>& allmappo, vector<Tpattern>& nextFP) {
     //len=1
@@ -241,15 +241,15 @@ void size1_miner(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbo
     //cout << endl;
 
     //cout << "Len1 " << endl;
-    //showallfp(Len1);  ÊÇÏÈaºóc
+    //showallfp(Len1);  æ˜¯å…ˆaåc
     //cout << endl;
 
 
-    //len=2£¬Ë«Ñ­»·,²»Ó¦¸ÃÊÇcaÓ¦¸ÃÊÇac
+    //len=2ï¼ŒåŒå¾ªç¯,ä¸åº”è¯¥æ˜¯caåº”è¯¥æ˜¯ac
     vector<Tpattern> Len2;
     for (int i = 0; i < Len1.size(); i++) {
         //for (int j = 0; j != i && j < Len1.size(); j++) {
-        for (int j = i+1; j < Len1.size(); j++) {//Ïàµ±ÓÚ²»º¬¶Ô½ÇÏßµÄÉÏ°ë¾ØÕóµÄ±éÀú
+        for (int j = i+1; j < Len1.size(); j++) {//ç›¸å½“äºä¸å«å¯¹è§’çº¿çš„ä¸ŠåŠçŸ©é˜µçš„éå†
 
             int sum = 0;
             Tpattern p{ { Len1[i][0][0], Len1[j][0][0] } };
@@ -282,7 +282,7 @@ void size1_miner(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbo
     //cout << endl;
     //cout << endl;
 
-    //len>=3£¬IÄ£Ê½À©Õ¹£¬»òÕßËµÏî¼¯Á¬½Ó
+    //len>=3ï¼ŒIæ¨¡å¼æ‰©å±•ï¼Œæˆ–è€…è¯´é¡¹é›†è¿æ¥
 
     miningS1L3(S, minsup, allsymbol, Len2, allFP, allsupport, allmappo, nextFP);
 
@@ -298,7 +298,7 @@ void miningS1L3(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbol
     vector<Tpattern> Lencur = Len2;
     vector<Tpattern> Lennext;
     vector<Tpattern> C;
-    //¿ÉÒÔ¼õ°ë²éÕÒÓÅ»¯
+    //å¯ä»¥å‡åŠæŸ¥æ‰¾ä¼˜åŒ–
     while (!Lencur.empty()) {
         for (Tpattern p1 : Lencur) {
             Tpattern p1front(p1.begin(), p1.end() - 1);//kong
@@ -307,7 +307,7 @@ void miningS1L3(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbol
                 Tpattern p2front(p2.begin(), p2.end() - 1);
                 Tpattern p2last(p2.begin() + 1, p2.end());
                 if (p1front == p2last) {
-                    Tpattern p = p1;//ÊÇp1²»ÊÇp1front
+                    Tpattern p = p1;//æ˜¯p1ä¸æ˜¯p1front
                     p.push_back(p2.back());
                     C.push_back(p);
                 }
@@ -319,7 +319,7 @@ void miningS1L3(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbol
             }
         }
 
-        //¼ÆËãÖ§³Ö¶È
+        //è®¡ç®—æ”¯æŒåº¦
         for (Tpattern p : C) {
             Tpo po;
             getpo(p, S, allmappo, po);
@@ -338,14 +338,14 @@ void miningS1L3(const Tpos_dict& S, int minsup, const vector<Tsymbol>& allsymbol
                 Lennext.push_back(p);
             }
         }
-
+        C = {};
 
         Lencur = Lennext;
         Lennext = {};
     }
 }
 
-//Ö§³Ö¶È¼ÆËãCSC£¬¸ÄÎªÖ±½ÓÊäÈëpo£¿
+//æ”¯æŒåº¦è®¡ç®—CSCï¼Œæ”¹ä¸ºç›´æ¥è¾“å…¥poï¼Ÿ
 void CSC(const Tpattern& p, const Tpos_dict& Pos_dict, const int minsup,
     vector<Tpattern>& allFP, vector<int>& allsupport, map<Tpattern, Tpo>& allmappo, vector<Tpattern>& nextFP) {
     Tpo po;
@@ -356,7 +356,7 @@ void CSC(const Tpattern& p, const Tpos_dict& Pos_dict, const int minsup,
         sum += it.size();
     }
 
-    //ºóÃæÕâ¼¸ĞĞ¿ÉÒÔ²»·ÅÔÚÕâ¸öº¯ÊıÀïÃæ£¬¿É¸ÄÎªÒıÓÃ´«²Îsum
+    //åé¢è¿™å‡ è¡Œå¯ä»¥ä¸æ”¾åœ¨è¿™ä¸ªå‡½æ•°é‡Œé¢ï¼Œå¯æ”¹ä¸ºå¼•ç”¨ä¼ å‚sum
     if (sum > minsup) {
         allFP.push_back(p);
         allsupport.push_back(sum);
@@ -366,7 +366,7 @@ void CSC(const Tpattern& p, const Tpos_dict& Pos_dict, const int minsup,
     //return sum;
 }
 
-//Çó³öÏÖÎ»ÖÃpo
+//æ±‚å‡ºç°ä½ç½®po
 void getpo(const Tpattern& p, const Tpos_dict& Pos_dict, const map<Tpattern, Tpo>& mappo, Tpo& result) {
     //Tpo result;
     if (p.size() == 1) {
@@ -381,28 +381,28 @@ void getpo(const Tpattern& p, const Tpos_dict& Pos_dict, const map<Tpattern, Tpo
 }
 
 
-//getpoRule1,·µ»ØÖµ¿ÉÄÜÎª¿Õ
+//getpoRule1,è¿”å›å€¼å¯èƒ½ä¸ºç©º
 void getpoRule1(const Titemset& itemset, const Tpos_dict& Pos_dict, Tpo& result) {
     if (itemset.empty()) {
-        return; // ·µ»Ø¿ÕµÄ¶şÎ¬ÏòÁ¿
+        return; // è¿”å›ç©ºçš„äºŒç»´å‘é‡
     }
 
     result = Pos_dict.at(itemset[0]);
     for (size_t i = 1; i < itemset.size(); i++) {
         Tpo temp = result;
         result = {};
-        two_dimensional_intersection(temp, Pos_dict.at(itemset[i]), result);//¸ÄĞ´Îª¶àÏß³ÌÊ±¿ÉÄÜÓĞ·çÏÕ
+        two_dimensional_intersection(temp, Pos_dict.at(itemset[i]), result);//æ”¹å†™ä¸ºå¤šçº¿ç¨‹æ—¶å¯èƒ½æœ‰é£é™©
     }
     //return result; 
 }
 
 
-//getpoRule2,²»ĞèÒªconst Tpos_dict& Pos_dict
+//getpoRule2,ä¸éœ€è¦const Tpos_dict& Pos_dict
 void getpoRule2(const Tpattern& p, const map<Tpattern, Tpo>& mappo, Tpo& result) {
-    Tpattern pre_p;//Ç°×ºÄ£Ê½
+    Tpattern pre_p;//å‰ç¼€æ¨¡å¼
     pre_p.insert(pre_p.end(), p.begin(), p.end() - 1);
     Tpo po1, po2;
-    //po1=mappo[pre_p];//[]Óëconst³åÍ»
+    //po1=mappo[pre_p];//[]ä¸constå†²çª
     po1 = mappo.at(pre_p);
     //po2=getpoRule1(p.back(), Pos_dict);
     auto back_p = { p.back() };
@@ -416,7 +416,7 @@ void getpoRule2(const Tpattern& p, const map<Tpattern, Tpo>& mappo, Tpo& result)
         int i = 0, j = 0;
         while (i < v1.size() && j < v2.size()) {
             if (v1[i] < v2[j]) {
-                result[k].push_back(v2[j]);//´æÈëºóÃæµÄ
+                result[k].push_back(v2[j]);//å­˜å…¥åé¢çš„
                 i++, j++;
             }
             else {
@@ -430,15 +430,15 @@ void getpoRule2(const Tpattern& p, const map<Tpattern, Tpo>& mappo, Tpo& result)
 
 
 
-//Ò»Î¬Êı×éÇó½»¼¯£¬¿ÉÄÜ´óĞ¡²»Ò»£¬ÊäÈë¿ÉÄÜÓĞ¿Õ¼¯£¬Êä³ö¿ÉÄÜÎª¿Õ,ÒªÇóresultÎª¿Õ
+//ä¸€ç»´æ•°ç»„æ±‚äº¤é›†ï¼Œå¯èƒ½å¤§å°ä¸ä¸€ï¼Œè¾“å…¥å¯èƒ½æœ‰ç©ºé›†ï¼Œè¾“å‡ºå¯èƒ½ä¸ºç©º,è¦æ±‚resultä¸ºç©º
 void vector_intersection(const vector<int>& v1, const vector<int>& v2, vector<int>& result) {
     //vector<int> result;
-    // Èç¹ûÈÎÒ»ÏòÁ¿Îª¿Õ£¬Ö±½Ó·µ»Ø¿Õ½á¹û
+    // å¦‚æœä»»ä¸€å‘é‡ä¸ºç©ºï¼Œç›´æ¥è¿”å›ç©ºç»“æœ
     if (v1.empty() || v2.empty()) {
         //return result;
         return;
     }
-    // Ê¹ÓÃË«Ö¸Õë·¨Çó½»¼¯
+    // ä½¿ç”¨åŒæŒ‡é’ˆæ³•æ±‚äº¤é›†
     int i = 0, j = 0;
     while (i < v1.size() && j < v2.size()) {
         if (v1[i] == v2[j]) {
@@ -456,15 +456,15 @@ void vector_intersection(const vector<int>& v1, const vector<int>& v2, vector<in
 
     //return result;
 }
-// ÇóÁ½¸ö¶şÎ¬ÏòÁ¿µÄ½»¼¯£¬sizeÒ»Ñù,Ã¿¸öÒ»Î¬Êı×ésize²»Ò»¶¨Ò»Ñù Ò»Î¬¿ÉÄÜÎª¿Õ£¬¶şÎ¬ÊäÈëÒ»¶¨·Ç¿Õ£¬¶şÎ¬Êä³ö¿ÉÄÜÎª¿Õ,ÒªÇóresultÎª¿Õ
+// æ±‚ä¸¤ä¸ªäºŒç»´å‘é‡çš„äº¤é›†ï¼Œsizeä¸€æ ·,æ¯ä¸ªä¸€ç»´æ•°ç»„sizeä¸ä¸€å®šä¸€æ · ä¸€ç»´å¯èƒ½ä¸ºç©ºï¼ŒäºŒç»´è¾“å…¥ä¸€å®šéç©ºï¼ŒäºŒç»´è¾“å‡ºå¯èƒ½ä¸ºç©º,è¦æ±‚resultä¸ºç©º
 void two_dimensional_intersection(const vector<vector<int>>& vv1, const vector<vector<int>>& vv2, vector<vector<int>>& result) {
 
     //vector<vector<int>> result;
-    // ¶ÔÃ¿¸öÎ»ÖÃµÄÒ»Î¬ÏòÁ¿Çó½»¼¯
+    // å¯¹æ¯ä¸ªä½ç½®çš„ä¸€ç»´å‘é‡æ±‚äº¤é›†
     for (size_t i = 0; i < vv1.size(); i++) {
         vector<int> v3;
         vector_intersection(vv1[i], vv2[i], v3);
-        result.push_back(v3);  //Èç¹ûv3Îª¿Õ£¬Ò²ÄÜÕı³£ÔËĞĞ
+        result.push_back(v3);  //å¦‚æœv3ä¸ºç©ºï¼Œä¹Ÿèƒ½æ­£å¸¸è¿è¡Œ
     }
     //return result;
 }
@@ -491,4 +491,5 @@ void showpattern(Tpattern p) {
         }
         cout << " ] ";
     }
+
 }
