@@ -12,10 +12,11 @@ _old表示按照原有论文复现，_bit表示尝试修改为二进制位图实
 <br>
 
 2026/4/29<br>
-上传cpp文件夹，这是第二种复现，代码是纯ai生成的<br>
-环境vscode，g++，claude code插件，deepseek v4模型，包括运行配置在内的全部文件。要求“cpp”文件夹与“datasets”文件夹在同一级目录下
+上传cpp文件夹，这是第二种复现，这次代码是纯vibe coding生成的<br>
+环境vscode，g++，claude code插件，deepseek v4模型，包括运行配置在内的全部文件均为ai生成。<br>
+要求“cpp”文件夹与“datasets”文件夹在同一级目录下
 
-
+<br>
 运行示例：ctrl+shift+b
 
 在终端输入
